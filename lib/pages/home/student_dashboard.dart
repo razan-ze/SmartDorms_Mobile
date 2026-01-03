@@ -3,10 +3,10 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../widgets/dorm_card.dart';
 import '../profile/view_profile.dart';
-import 'favorites.dart';
 import '../home/searchbar_page.dart';
-import '../landing_page.dart';
+import 'favorites.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../landing_page.dart';
 
 class StudentDashboard extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -68,7 +68,6 @@ class _StudentDashboardState extends State<StudentDashboard> {
     }
   }
 
-  // LOGOUT FUNCTION
   void logout(BuildContext context) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -89,11 +88,9 @@ class _StudentDashboardState extends State<StudentDashboard> {
     );
 
     if (confirmed ?? false) {
-      // Clear SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       await prefs.clear();
 
-      // Navigate to Landing Page and remove all previous routes
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => const LandingPage()),
@@ -122,9 +119,8 @@ class _StudentDashboardState extends State<StudentDashboard> {
         actions: [
           IconButton(
             icon: const Icon(Icons.home_outlined),
-            onPressed: () {}, // stays on dashboard
+            onPressed: () {},
           ),
-          // Favorite icon with counter + navigation
           Stack(
             children: [
               IconButton(
@@ -135,7 +131,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
                     MaterialPageRoute(
                       builder: (_) => FavoritePage(userData: widget.userData),
                     ),
-                  ).then((_) => fetchFavoritesCount()); // refresh on return
+                  ).then((_) => fetchFavoritesCount());
                 },
               ),
               if (favoritesCount > 0)
@@ -148,7 +144,10 @@ class _StudentDashboardState extends State<StudentDashboard> {
                       color: Colors.red,
                       shape: BoxShape.circle,
                     ),
-                    constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                    constraints: const BoxConstraints(
+                      minWidth: 16,
+                      minHeight: 16,
+                    ),
                     child: Text(
                       '$favoritesCount',
                       style: const TextStyle(color: Colors.white, fontSize: 10),
@@ -230,12 +229,13 @@ class _StudentDashboardState extends State<StudentDashboard> {
                   child: GridView.builder(
                     padding: const EdgeInsets.all(16),
                     itemCount: dorms.length,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      childAspectRatio: 0.90,
-                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          childAspectRatio: 0.90,
+                        ),
                     itemBuilder: (context, index) {
                       return DormCard(
                         dorm: dorms[index],

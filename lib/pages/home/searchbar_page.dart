@@ -30,7 +30,7 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
 
     try {
       final url = Uri.parse(
-        "https://unistayapp-server-s7nf.onrender.com/dorms/search?q=$query",
+        "https://unistay-server-rm0e.onrender.com/dorms/search?q=$query",
       );
 
       final response = await http.get(url);
