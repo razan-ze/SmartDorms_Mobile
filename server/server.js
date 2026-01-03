@@ -141,6 +141,20 @@ app.get("/favorites/:studentId", (req, res) => {
     res.json(data);
   });
 });
+// ================= REMOVE FAVORITE =================
+app.delete("/removeFavorite", (req, res) => {
+  const { student_id, dorm_id } = req.body;
+  const q = "DELETE FROM favorites WHERE student_id = ? AND dorm_id = ?";
+
+  db.query(q, [student_id, dorm_id], (err) => {
+    if (err) {
+      console.log("Error deleting:", err);
+      return res.status(500).json(err);
+    }
+    
+    res.json({ message: "Removed successfully" });
+  });
+});
 // ================= Search =================
 // SEARCH API
 app.get("/dorms/search", (req, res) => {
