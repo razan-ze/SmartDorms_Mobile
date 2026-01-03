@@ -3,8 +3,11 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../widgets/dorm_card.dart';
 import '../profile/view_profile.dart';
-import '../home/searchbar_page.dart';
 import 'favorites.dart';
+import '../home/searchbar_page.dart';
+import '../landing_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 class StudentDashboard extends StatefulWidget {
   final Map<String, dynamic> userData;
 
@@ -65,6 +68,40 @@ class _StudentDashboardState extends State<StudentDashboard> {
     }
   }
 
+  // LOGOUT FUNCTION
+  void logout(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Logout"),
+        content: const Text("Are you sure you want to logout?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text("Logout"),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed ?? false) {
+      // Clear SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+
+      // Navigate to Landing Page and remove all previous routes
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const LandingPage()),
+        (route) => false,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,7 +116,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
           child: Image.asset(
             'assets/logoo.png',
             fit: BoxFit.contain,
-            height: 40, // kbira shway
+            height: 40,
           ),
         ),
         actions: [
@@ -87,21 +124,18 @@ class _StudentDashboardState extends State<StudentDashboard> {
             icon: const Icon(Icons.home_outlined),
             onPressed: () {}, // stays on dashboard
           ),
-          // Favorite icon with counter only
+          // Favorite icon with counter + navigation
           Stack(
             children: [
               IconButton(
                 icon: const Icon(Icons.favorite_border),
                 onPressed: () {
-                  // Navigate to FavoritePage
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (_) => FavoritePage(userData: widget.userData),
                     ),
-                  ).then(
-                    (_) => fetchFavoritesCount(),
-                  ); // refresh count on return
+                  ).then((_) => fetchFavoritesCount()); // refresh on return
                 },
               ),
               if (favoritesCount > 0)
@@ -114,10 +148,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
                       color: Colors.red,
                       shape: BoxShape.circle,
                     ),
-                    constraints: const BoxConstraints(
-                      minWidth: 16,
-                      minHeight: 16,
-                    ),
+                    constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
                     child: Text(
                       '$favoritesCount',
                       style: const TextStyle(color: Colors.white, fontSize: 10),
@@ -137,6 +168,10 @@ class _StudentDashboardState extends State<StudentDashboard> {
                 ),
               );
             },
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () => logout(context),
           ),
           const SizedBox(width: 8),
         ],
@@ -195,13 +230,12 @@ class _StudentDashboardState extends State<StudentDashboard> {
                   child: GridView.builder(
                     padding: const EdgeInsets.all(16),
                     itemCount: dorms.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
-                          childAspectRatio: 0.90,
-                        ),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                      childAspectRatio: 0.90,
+                    ),
                     itemBuilder: (context, index) {
                       return DormCard(
                         dorm: dorms[index],
