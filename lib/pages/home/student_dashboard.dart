@@ -3,10 +3,11 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../widgets/dorm_card.dart';
 import '../profile/view_profile.dart';
-import '../home/searchbar_page.dart';
+
 import 'favorites.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../landing_page.dart';
+import '../../widgets/searchbar.dart';
 
 class StudentDashboard extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -37,7 +38,9 @@ class _StudentDashboardState extends State<StudentDashboard> {
 
   Future<void> getDorms() async {
     try {
-      final url = Uri.parse('https://unistay-server-rm0e.onrender.com/dorms');
+      final url = Uri.parse(
+        'https://unistay-server-rm0e.onrender.com/dorms',
+      );
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
@@ -117,10 +120,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
           ),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.home_outlined),
-            onPressed: () {},
-          ),
+          IconButton(icon: const Icon(Icons.home_outlined), onPressed: () {}),
           Stack(
             children: [
               IconButton(
@@ -182,47 +182,9 @@ class _StudentDashboardState extends State<StudentDashboard> {
           : Column(
               children: [
                 // SEARCH BAR
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                  child: TextField(
-                    controller: searchController,
-                    textInputAction: TextInputAction.search,
-                    onSubmitted: (query) {
-                      if (query.trim().isNotEmpty) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => SearchResultsPage(
-                              searchQuery: query.trim(),
-                              userData: widget.userData,
-                            ),
-                          ),
-                        );
-                      }
-                    },
-                    decoration: InputDecoration(
-                      hintText: "Search dorms...",
-                      prefixIcon: const Icon(Icons.search),
-                      filled: true,
-                      fillColor: Colors.white,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 0),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: const BorderSide(color: Color(0xFF4A5328)),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: const BorderSide(color: Color(0xFF4A5328)),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: const BorderSide(
-                          color: Color(0xFF4A5328),
-                          width: 2,
-                        ),
-                      ),
-                    ),
-                  ),
+                DormSearchBar(
+                  controller: searchController,
+                  userData: widget.userData,
                 ),
                 // DORMS GRID
                 Expanded(

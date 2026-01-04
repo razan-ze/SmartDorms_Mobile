@@ -15,7 +15,7 @@ class _LandingPageState extends State<LandingPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // --- TOP SECTION (Background Image & Login) ---
+          
             Stack(
               children: [
                 // Background Image
